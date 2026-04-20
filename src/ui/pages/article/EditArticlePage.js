@@ -13,8 +13,10 @@ export class EditArticlePage {
     this.errorMessage = page.getByRole('list').nth(1);
   }
 
-  getTagPill(tag) {
-    return this.page.locator('.tag-default', { hasText: tag });
+  async getTagPill(tag) {
+    return await test.step(`Get the '${tag}' tag pill`, async () =>
+      this.page.locator('.tag-default', { hasText: tag }),
+    );
   }
 
   async fillTitleField(title) {
@@ -62,7 +64,8 @@ export class EditArticlePage {
 
   async removeTag(tag) {
     await test.step(`Remove the '${tag}' tag`, async () => {
-      await this.getTagPill(tag).locator('i.ion-close-round').click();
+      const pill = await this.getTagPill(tag);
+      await pill.locator('i.ion-close-round').click();
     });
   }
 
