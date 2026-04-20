@@ -1,20 +1,24 @@
 import { expect, test } from '@playwright/test';
 
-export class CreateArticlePage {
+export class EditArticlePage {
   constructor(page) {
     this.page = page;
     this.titleField = page.getByPlaceholder('Article Title');
     this.descriptionField = page.getByPlaceholder(`What's this article about?`);
     this.textField = page.getByPlaceholder('Write your article (in markdown)');
     this.tagsField = page.getByPlaceholder('Enter tags');
-    this.publishArticleButton = page.getByRole('button', {
-      name: 'Publish Article',
+    this.updateArticleButton = page.getByRole('button', {
+      name: 'Update Article',
     });
     this.errorMessage = page.getByRole('list').nth(1);
   }
 
+  getTagPill(tag) {
+    return this.page.locator('.tag-default', { hasText: tag });
+  }
+
   async fillTitleField(title) {
-    await test.step(`Fill the 'Title' field`, async () => {
+    await test.step(`Fill the 'Title' field with '${title}'`, async () => {
       await this.titleField.fill(title);
     });
   }
@@ -31,9 +35,21 @@ export class CreateArticlePage {
     });
   }
 
-  async clickPublishArticleButton() {
-    await test.step(`Click the 'Publish Article' button`, async () => {
-      await this.publishArticleButton.click();
+  async clearTitleField() {
+    await test.step(`Clear the 'Title' field`, async () => {
+      await this.titleField.fill('');
+    });
+  }
+
+  async clearDescriptionField() {
+    await test.step(`Clear the 'Description' field`, async () => {
+      await this.descriptionField.fill('');
+    });
+  }
+
+  async clearTextField() {
+    await test.step(`Clear the 'Text' field`, async () => {
+      await this.textField.fill('');
     });
   }
 
@@ -44,21 +60,21 @@ export class CreateArticlePage {
     });
   }
 
-  async addTags(tags) {
-    await test.step(`Add tags`, async () => {
-      for (const tag of tags) {
-        await this.addTag(tag);
-      }
+  async removeTag(tag) {
+    await test.step(`Remove the '${tag}' tag`, async () => {
+      await this.getTagPill(tag).locator('i.ion-close-round').click();
     });
   }
 
-  async submitArticleForm(article) {
-    await test.step(`Fill the 'New Article' form`, async () => {
-      await this.fillTitleField(article.title);
-      await this.fillDescriptionField(article.description);
-      await this.fillTextField(article.text);
-      await this.addTags(article.tags ?? []);
-      await this.clickPublishArticleButton();
+  async clickUpdateArticleButton() {
+    await test.step(`Click the 'Update Article' button`, async () => {
+      await this.updateArticleButton.click();
+    });
+  }
+
+  async assertDescriptionFieldValue(description) {
+    await test.step(`Assert the 'Description' field value`, async () => {
+      await expect(this.descriptionField).toHaveValue(description);
     });
   }
 
