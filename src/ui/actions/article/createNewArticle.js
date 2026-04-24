@@ -12,9 +12,9 @@ export async function createNewArticle(page, article) {
     await homePage.clickNewArticleLink();
     await createArticlePage.submitArticleForm(article);
 
-    await page.waitForURL(/\/article\//);
+    await viewArticlePage.waitForArticlePageLoaded();
     await viewArticlePage.assertArticleTitleIsVisible(article.title);
-    for (const tag of article.tags) {
+    for (const tag of article.tags ?? []) {
       await viewArticlePage.assertTagIsVisible(tag);
     }
   });
